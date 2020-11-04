@@ -49,7 +49,10 @@ namespace Climp
             => _configs.TryGetValue(propertyName, out var value) ? (TValue)value : default;
 
         private void SetValue<TValue>(TValue value, [CallerMemberName] string propertyName = null)
-            => _configs[propertyName] = value;
+        {
+            _configs[propertyName] = value;
+            _NotifyPropertyChanged(propertyName);
+        }
 
         private void _NotifyPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
