@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Climp.Commands;
 using Newtonsoft.Json;
 
@@ -30,7 +31,7 @@ namespace Climp
                     var commandLine = Console.ReadLine();
                     if (!string.IsNullOrWhiteSpace(commandLine))
                     {
-                        var commandLineParts = commandLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                        var commandLineParts = ReadCommandArguments(commandLine);
                         var commandName = commandLineParts[0];
                         if (commands.TryGetValue(commandName, out var command))
                             if (command.RequiresConfig && !state.Config.IsConfigured)
@@ -48,10 +49,39 @@ namespace Climp
             while (!state.ShouldExit);
         }
 
+        private static IReadOnlyList<string> ReadCommandArguments(string inputLine)
+        {
+            var arguments = new List<string>();
+            char? quotedChar = null;
+            var argumentBuilder = new StringBuilder();
+            foreach (var @char in inputLine)
+            {
+                if (quotedChar != null)
+                    if (@char == quotedChar)
+                        quotedChar = null;
+                    else
+                        argumentBuilder.Append(@char);
+                else if (@char == '"' || @char == '\'')
+                    quotedChar = @char;
+                else if (@char == ' ' && argumentBuilder.Length > 0)
+                {
+                    arguments.Add(argumentBuilder.ToString());
+                    argumentBuilder.Clear();
+                }
+                else
+                    argumentBuilder.Append(@char);
+            }
+            if (argumentBuilder.Length > 0)
+                arguments.Add(argumentBuilder.ToString());
+
+            return arguments;
+        }
+
         private static IEnumerable<Command> _GetCommands()
         {
             var commands = new Command[]
             {
+                new ConfigCommand(),
                 new ExitCommand(),
                 new PlayCommand(),
                 new StopCommand()
