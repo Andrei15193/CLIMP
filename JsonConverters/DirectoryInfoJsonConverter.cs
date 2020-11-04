@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Clip.JsonConverters
+namespace Climp.JsonConverters
 {
     public class DirectoryInfoJsonConverter : JsonConverter
     {

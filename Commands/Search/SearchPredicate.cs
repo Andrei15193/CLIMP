@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace Clip.Commands.Search
+namespace Climp.Commands.Search
 {
     public abstract class SearchPredicate
     {

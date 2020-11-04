@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Clip.Commands.Search
+namespace Climp.Commands.Search
 {
     public class ArgumentsSearchPredicate : SearchPredicate
     {

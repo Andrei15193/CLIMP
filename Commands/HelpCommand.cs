@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Clip.Commands
+namespace Climp.Commands
 {
     public class HelpCommand : Command
     {

@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Clip.Commands;
+using Climp.Commands;
 using Newtonsoft.Json;
 
-namespace Clip
+namespace Climp
 {
     public static class Program
     {
         public static void Main()
         {
-            Console.WriteLine("Welcome to CLIP (Command Line Interface Player), to get started type help for a list of commands.");
+            Console.WriteLine("Welcome to CLIMP (Command Line Interface Media Player), to get started type help for a list of commands.");
             Console.WriteLine();
 
             var commands = _GetCommands()
@@ -19,7 +19,7 @@ namespace Clip
                 .ToDictionary(pair => pair.Name, pair => pair.Command, StringComparer.OrdinalIgnoreCase);
 
             var state = new State(
-                Config.FromBoundFile(new FileInfo(Path.Combine(Environment.GetEnvironmentVariable("userProfile"), ".clip"))),
+                Config.FromBoundFile(new FileInfo(Path.Combine(Environment.GetEnvironmentVariable("userProfile"), ".climp"))),
                 Console.Out,
                 Console.Error
             );

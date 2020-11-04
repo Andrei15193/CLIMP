@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Clip.Commands
+namespace Climp.Commands
 {
     public class ExitCommand : Command
     {

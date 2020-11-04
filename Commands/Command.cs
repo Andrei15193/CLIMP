@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Clip.Commands
+namespace Climp.Commands
 {
     public abstract class Command
     {

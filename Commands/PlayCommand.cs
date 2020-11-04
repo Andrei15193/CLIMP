@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Clip.Commands.Search;
+using Climp.Commands.Search;
 
-namespace Clip.Commands
+namespace Climp.Commands
 {
     public class PlayCommand : Command
     {

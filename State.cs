@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 
-namespace Clip
+namespace Climp
 {
     public class State
     {

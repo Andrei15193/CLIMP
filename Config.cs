@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
-using Clip.JsonConverters;
+using Climp.JsonConverters;
 using Newtonsoft.Json;
 
-namespace Clip
+namespace Climp
 {
     public sealed class Config : INotifyPropertyChanged
     {

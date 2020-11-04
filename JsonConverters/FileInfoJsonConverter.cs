@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Newtonsoft.Json;
 
-namespace Clip.JsonConverters
+namespace Climp.JsonConverters
 {
     public class FileInfoJsonConverter : JsonConverter
     {
