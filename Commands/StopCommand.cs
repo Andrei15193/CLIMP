@@ -5,11 +5,7 @@ namespace Climp.Commands
 {
     public class StopCommand : Command
     {
-        public override string Name
-            => "stop";
-
-        public override IReadOnlyList<string> Aliases
-            => new[] { "s" };
+        public override IReadOnlyList<string> Names { get; } = new[] { "stop", "s" };
 
         protected internal override string Summary
             => "Stops the currently playing song";

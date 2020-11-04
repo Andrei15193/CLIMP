@@ -9,9 +9,7 @@ namespace Climp.Commands
         {
         }
 
-        public abstract string Name { get; }
-
-        public virtual IReadOnlyList<string> Aliases => Enumerable.Empty<string>() as IReadOnlyList<string> ?? new string[0];
+        public abstract IReadOnlyList<string> Names { get; }
 
         protected internal abstract string Summary { get; }
 

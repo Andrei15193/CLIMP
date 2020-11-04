@@ -8,11 +8,7 @@ namespace Climp.Commands
 {
     public class PlayCommand : Command
     {
-        public override string Name
-            => "play";
-
-        public override IReadOnlyList<string> Aliases
-            => new[] { "p" };
+        public override IReadOnlyList<string> Names { get; } = new[] { "play", "p" };
 
         protected internal override string Summary
             => "Plays a song matching the search criteria";

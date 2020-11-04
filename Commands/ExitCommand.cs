@@ -8,11 +8,7 @@ namespace Climp.Commands
         {
         }
 
-        public override string Name
-            => "exit";
-
-        public override IReadOnlyList<string> Aliases
-            => new[] { "close" };
+        public override IReadOnlyList<string> Names { get; } = new[] { "exit", "close" };
 
         protected internal override string Summary
             => "Closes the application, type this if you no longer wish to listen to music *sad face*";

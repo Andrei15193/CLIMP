@@ -15,7 +15,7 @@ namespace Climp
             Console.WriteLine();
 
             var commands = _GetCommands()
-                .SelectMany(command => Enumerable.Repeat(command.Name, 1).Concat(command.Aliases).Select(name => new { Name = name, Command = command }))
+                .SelectMany(command => command.Names.Select(name => new { Name = name, Command = command }))
                 .ToDictionary(pair => pair.Name, pair => pair.Command, StringComparer.OrdinalIgnoreCase);
 
             var state = new State(

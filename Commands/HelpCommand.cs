@@ -11,11 +11,7 @@ namespace Climp.Commands
         public HelpCommand(IEnumerable<Command> commands)
             => _commands = Enumerable.Repeat(this, 1).Concat(commands).ToList();
 
-        public override string Name
-            => "help";
-
-        public override IReadOnlyList<string> Aliases
-            => new[] { "h" };
+        public override IReadOnlyList<string> Names { get; } = new[] { "help", "h" };
 
         protected internal override string Summary
             => "Displays this information.";
@@ -25,7 +21,7 @@ namespace Climp.Commands
             if (arguments.Any())
             {
                 var commandName = arguments.First();
-                var command = _commands.SingleOrDefault(command => string.Equals(commandName, command.Name, StringComparison.OrdinalIgnoreCase) || command.Aliases.Contains(commandName, StringComparer.OrdinalIgnoreCase));
+                var command = _commands.SingleOrDefault(command => string.Equals(commandName, command.Names.Contains(commandName, StringComparer.OrdinalIgnoreCase)));
                 if (command is null)
                     state.Output.WriteLine($"Unknown '{commandName}' command.");
                 else
@@ -37,7 +33,7 @@ namespace Climp.Commands
             else
                 foreach (var command in _commands)
                 {
-                    state.Output.WriteLine(string.Join(", ", Enumerable.Repeat(command.Name, 1).Concat(command.Aliases)));
+                    state.Output.WriteLine(string.Join(", ", command.Names));
                     state.Output.Write(string.Empty);
                     state.Output.WriteLine(command.Summary);
                     state.Output.Write(string.Empty);
