@@ -13,8 +13,9 @@ namespace Climp.Commands
 
         public override IReadOnlyList<string> Names { get; } = new[] { "help", "h" };
 
-        protected internal override string Summary
-            => "Displays this information.";
+        public override bool RequiresConfig => false;
+
+        protected internal override string Summary => "Displays this information.";
 
         protected internal override void Execute(State state, IReadOnlyList<string> arguments)
         {

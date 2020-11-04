@@ -7,8 +7,9 @@ namespace Climp.Commands
     {
         public override IReadOnlyList<string> Names { get; } = new[] { "stop", "s" };
 
-        protected internal override string Summary
-            => "Stops the currently playing song";
+        public override bool RequiresConfig => false;
+
+        protected internal override string Summary => "Stops the currently playing song";
 
         protected internal override void Execute(State state, IReadOnlyList<string> arguments)
         {

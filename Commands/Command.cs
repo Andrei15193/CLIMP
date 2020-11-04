@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Climp.Commands
 {
@@ -10,6 +9,8 @@ namespace Climp.Commands
         }
 
         public abstract IReadOnlyList<string> Names { get; }
+
+        public abstract bool RequiresConfig { get; }
 
         protected internal abstract string Summary { get; }
 

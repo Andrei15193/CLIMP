@@ -10,8 +10,9 @@ namespace Climp.Commands
     {
         public override IReadOnlyList<string> Names { get; } = new[] { "play", "p" };
 
-        protected internal override string Summary
-            => "Plays a song matching the search criteria";
+        public override bool RequiresConfig => true;
+
+        protected internal override string Summary => "Plays a song matching the search criteria";
 
         protected internal override void Execute(State state, IReadOnlyList<string> arguments)
         {

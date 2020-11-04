@@ -33,7 +33,10 @@ namespace Climp
                         var commandLineParts = commandLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                         var commandName = commandLineParts[0];
                         if (commands.TryGetValue(commandName, out var command))
-                            command.Execute(state, commandLineParts.Skip(1).ToArray());
+                            if (command.RequiresConfig && !state.Config.IsConfigured)
+                                Console.Error.WriteLine($"Command '{commandName}' requires config, run config command for setup");
+                            else
+                                command.Execute(state, commandLineParts.Skip(1).ToArray());
                         else
                             Console.Error.WriteLine($"Unknown '{commandName}' command.");
                     }

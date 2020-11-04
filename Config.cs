@@ -42,6 +42,9 @@ namespace Climp
         [JsonConverter(typeof(DirectoryInfoJsonConverter))]
         public IReadOnlyList<DirectoryInfo> MediaDirectories { get => GetValue<IReadOnlyList<DirectoryInfo>>(); set => SetValue(value); }
 
+        public bool IsConfigured
+            => !(VlcExecutablePath is null || MediaDirectories is null);
+
         private TValue GetValue<TValue>([CallerMemberName] string propertyName = null)
             => _configs.TryGetValue(propertyName, out var value) ? (TValue)value : default;
 
