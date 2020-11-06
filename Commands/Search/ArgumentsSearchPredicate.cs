@@ -1,27 +1,28 @@
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using TagLib;
 
 namespace Climp.Commands.Search
 {
     public class ArgumentsSearchPredicate : SearchPredicate
     {
-        private readonly Regex _searchRegex;
+        private readonly IReadOnlyList<string> _arguments;
 
         public ArgumentsSearchPredicate(IReadOnlyList<string> arguments)
-            => _searchRegex = new Regex($@"(^|\W)({string.Join('|', arguments.Select(Regex.Escape))})(\W|$)", RegexOptions.IgnoreCase);
+            => _arguments = arguments;
 
-        public override int GetRank(FileInfo mediaFile)
+        public override int GetRank(File mediaFile)
         {
-            var match = _searchRegex.Match(mediaFile.Name);
-            var rank = 0;
-            while (match.Success)
-            {
-                rank++;
-                match = match.NextMatch();
-            }
-            return rank;
+            var matchedArguments = _arguments.Where(argument => mediaFile.Tag.Title.Contains(argument, StringComparison.OrdinalIgnoreCase)).ToArray();
+            if (matchedArguments.Any())
+                return matchedArguments.Count()
+                    + _arguments
+                        .Except(matchedArguments)
+                        .Count(remainingArgument => mediaFile.Tag.AlbumArtists.Any(albumArtist => albumArtist.Contains(remainingArgument, StringComparison.OrdinalIgnoreCase)));
+            else
+                return 0;
         }
     }
 }
