@@ -3,8 +3,18 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatSpecificWarningsAsErrors />
+
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>climp</ToolCommandName>
+    <Description>Command-Line-Interface-Media-Player (play music from the command line)</Description>
+    <Authors>Andrei15193</Authors>
+    <Copyright>Andrei15193</Copyright>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/Andrei15193/CLIMP.git</RepositoryUrl>
+    <PackageTags>embedded resource assembly browser</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,4 +22,7 @@
     <PackageReference Include="TagLibSharp" Version="2.2.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include=".\LICENSE" Pack="true" PackagePath="" Visible="false" />
+  </ItemGroup>
 </Project>

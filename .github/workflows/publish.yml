@@ -1,0 +1,78 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+        
+    - name: Setup Project Info
+      id: package_info
+      shell: pwsh
+      run: |
+        git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+        $major = 1
+        $minor = 0
+        $patch = -1
+        (git tag) |
+            Where-Object { $_ -match "^\d+\.\d+.\d+$" } |
+            ForEach-Object { $major = [Math]::Max($major, $_.Split('.')[0]) }
+        (git tag) |
+            Where-Object { $_ -match "^$major\.\d+.\d+$" } |
+            ForEach-Object { $minor = [Math]::Max($minor, $_.Split('.')[1]) }
+        (git tag) |
+            Where-Object { $_ -match "^$major\.$minor.\d+$" } |
+            ForEach-Object { $patch = [Math]::Max($patch, $_.Split('.')[2]) }
+        $patch++
+        Write-Host "::set-output name=package_version::${major}.${minor}.${patch}"
+        Write-Host "::set-output name=assembly_version::${major}.${minor}.0.${patch}"
+        [Convert]::FromBase64String("${{ secrets.KeyFile }}") | Set-Content ./Climp.snk -AsByteStream
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build
+      shell: pwsh
+      run: |
+        dotnet build `
+          --configuration Release `
+          --no-restore `
+          -property:Version=${{ steps.package_info.outputs.assembly_version }} `
+          -property:SignAssembly=True `
+          -property:AssemblyOriginatorKeyFile=./Climp.snk
+
+    - name: Pack
+      shell: pwsh
+      run: |
+        dotnet pack `
+          --configuration Release `
+          --output publish `
+          --no-build `
+          -property:PackageVersion=${{ steps.package_info.outputs.package_version }} `
+          -property:RepositoryCommit=$env:GITHUB_SHA
+
+    - name: Publish
+      shell: pwsh
+      run: |
+        dotnet nuget add source https://nuget.pkg.github.com/Andrei15193/index.json -n github -u Andrei15193 -p ${{ secrets.UploadPackageAuthenticationToken }} --store-password-in-clear-text
+        dotnet nuget push "./publish/Climp.${{ steps.package_info.outputs.package_version }}.nupkg" --source "github"
+
+    - name: Push Tag
+      uses: anothrNick/github-tag-action@1.17.2
+      if: startsWith(github.ref, 'refs/heads/releases/')
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CUSTOM_TAG : ${{ steps.package_info.outputs.package_version }}
