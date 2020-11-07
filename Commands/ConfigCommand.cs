@@ -40,25 +40,18 @@ namespace Climp.Commands
             }
             else
             {
-                FileInfo vlcPath = null;
-                List<DirectoryInfo> mediaDirectories = null;
                 Action<string> argumentProcessor = null;
                 foreach (var argument in arguments)
                     if ("--vlc-path".Equals(argument, StringComparison.OrdinalIgnoreCase))
-                        argumentProcessor = arg => { vlcPath = new FileInfo(arg); argumentProcessor = null; };
+                        argumentProcessor = arg => { _config.VlcExecutablePath = new FileInfo(arg); argumentProcessor = null; };
                     else if ("--media-directories".Equals(argument, StringComparison.OrdinalIgnoreCase))
                     {
-                        if (mediaDirectories is null)
-                            mediaDirectories = new List<DirectoryInfo>();
+                        var mediaDirectories = new List<DirectoryInfo>();
+                        _config.MediaDirectories = mediaDirectories;
                         argumentProcessor = arg => mediaDirectories.Add(new DirectoryInfo(arg));
                     }
                     else if (argumentProcessor != null)
                         argumentProcessor(argument);
-
-                if (vlcPath != null)
-                    _config.VlcExecutablePath = vlcPath;
-                if (mediaDirectories != null)
-                    _config.MediaDirectories = mediaDirectories;
                 _config.Save();
             }
         }
