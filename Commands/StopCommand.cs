@@ -5,6 +5,11 @@ namespace Climp.Commands
 {
     public class StopCommand : Command
     {
+        private readonly State _state;
+
+        public StopCommand(State state)
+            => _state = state;
+
         public override IReadOnlyList<string> Names { get; } = new[] { "stop", "s" };
 
         public override bool RequiresConfig => false;
@@ -16,13 +21,17 @@ namespace Climp.Commands
             Summary
         };
 
-        public override void Execute(Context context,State state, IReadOnlyList<string> arguments)
+        public override void Execute(Context context, IReadOnlyList<string> arguments)
         {
-            var vlcProcess = state.VlcProcess;
-            if (vlcProcess is null || state.VlcProcess.HasExited)
+            var vlcProcess = _state.VlcProcess;
+            if (vlcProcess is null || _state.VlcProcess.HasExited)
                 context.Output.WriteLine("No song is currently playing");
             else
-                state.VlcProcess.Kill(true);
+            {
+                _state.VlcProcess.Kill(true);
+                _state.VlcProcess = null;
+                _state.Save();
+            }
         }
     }
 }

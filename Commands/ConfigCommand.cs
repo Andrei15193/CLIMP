@@ -29,7 +29,7 @@ namespace Climp.Commands
             "  Specify the media directories, --media-directories \"C:\\\\directory1\" \"C:\\\\directory2\\\\subdirectory\""
         };
 
-        public override void Execute(Context context,State state, IReadOnlyList<string> arguments)
+        public override void Execute(Context context, IReadOnlyList<string> arguments)
         {
             if (arguments.Count == 0)
             {

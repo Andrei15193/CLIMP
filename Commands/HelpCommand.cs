@@ -22,7 +22,7 @@ namespace Climp.Commands
             Summary
         };
 
-        public override void Execute(Context context,State state, IReadOnlyList<string> arguments)
+        public override void Execute(Context context, IReadOnlyList<string> arguments)
         {
             if (arguments.Any())
             {

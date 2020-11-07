@@ -30,7 +30,6 @@ namespace Climp
 
         public void Refresh(Context context)
         {
-            context.Output.WriteLine("Checking index");
             var indexMetadata = _GetIndexMetadata();
             if (indexMetadata is null || _indexVersion != indexMetadata.Version || _config.MediaDirectories.Any(mediaDirectory => mediaDirectory.LastWriteTime.ToUniversalTime() > indexMetadata.CreateDate))
             {
@@ -77,8 +76,6 @@ namespace Climp
 
                 context.Output.WriteLine($"Index refresh completed, took {stopwatch.Elapsed}.");
             }
-            else
-                context.Output.WriteLine("Index is up to date");
         }
 
         private MediaIndexMetadata _GetIndexMetadata()
