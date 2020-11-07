@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Climp.Commands;
-using Newtonsoft.Json;
 
 namespace Climp
 {
@@ -15,12 +14,14 @@ namespace Climp
             Console.WriteLine("Welcome to CLIMP (Command Line Interface Media Player), to get started type help for a list of commands.");
             Console.WriteLine();
 
-            var commands = _GetCommands()
+            var config = new Config(new FileInfo(Path.Combine(Environment.GetEnvironmentVariable("userProfile"), ".climp-config")));
+            config.Load();
+
+            var commands = _GetCommands(config)
                 .SelectMany(command => command.Names.Select(name => new { Name = name, Command = command }))
                 .ToDictionary(pair => pair.Name, pair => pair.Command, StringComparer.OrdinalIgnoreCase);
 
             var state = new State(
-                Config.FromBoundFile(new FileInfo(Path.Combine(Environment.GetEnvironmentVariable("userProfile"), ".climp"))),
                 Console.Out,
                 Console.Error
             );
@@ -31,10 +32,10 @@ namespace Climp
                     var commandLine = Console.ReadLine();
                     if (!string.IsNullOrWhiteSpace(commandLine))
                     {
-                        var commandLineParts = ReadCommandArguments(commandLine);
+                        var commandLineParts = _ReadCommandArguments(commandLine);
                         var commandName = commandLineParts[0];
                         if (commands.TryGetValue(commandName, out var command))
-                            if (command.RequiresConfig && !state.Config.IsConfigured)
+                            if (command.RequiresConfig && !config.IsConfigured())
                                 Console.Error.WriteLine($"Command '{commandName}' requires config, run config command for setup");
                             else
                                 command.Execute(state, commandLineParts.Skip(1).ToArray());
@@ -49,7 +50,22 @@ namespace Climp
             while (!state.ShouldExit);
         }
 
-        private static IReadOnlyList<string> ReadCommandArguments(string inputLine)
+        private static IEnumerable<Command> _GetCommands(Config config)
+        {
+            var commands = new Command[]
+            {
+                new ConfigCommand(config),
+                new ExitCommand(),
+                new PlayCommand(config),
+                new StopCommand()
+            };
+
+            yield return new HelpCommand(commands);
+            foreach (var command in commands)
+                yield return command;
+        }
+
+        private static IReadOnlyList<string> _ReadCommandArguments(string inputLine)
         {
             var arguments = new List<string>();
             char? quotedChar = null;
@@ -75,21 +91,6 @@ namespace Climp
                 arguments.Add(argumentBuilder.ToString());
 
             return arguments;
-        }
-
-        private static IEnumerable<Command> _GetCommands()
-        {
-            var commands = new Command[]
-            {
-                new ConfigCommand(),
-                new ExitCommand(),
-                new PlayCommand(),
-                new StopCommand()
-            };
-
-            yield return new HelpCommand(commands);
-            foreach (var command in commands)
-                yield return command;
         }
     }
 }

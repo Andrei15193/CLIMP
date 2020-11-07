@@ -1,60 +1,37 @@
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Runtime.CompilerServices;
 using Climp.JsonConverters;
 using Newtonsoft.Json;
 
 namespace Climp
 {
-    public sealed class Config : INotifyPropertyChanged
+    public sealed class Config
     {
-        public static Config FromBoundFile(FileInfo configFile)
+        private readonly FileInfo _configFile;
+
+        public Config(FileInfo configFile)
+            => _configFile = configFile;
+
+        public FileInfo VlcExecutablePath { get; set; }
+
+        public IReadOnlyList<DirectoryInfo> MediaDirectories { get; set; }
+
+        public bool IsConfigured()
+            => (VlcExecutablePath != null && MediaDirectories != null);
+
+        public void Load()
         {
-            Config config;
-            if (configFile.Exists)
-            {
-                using var configFileStream = new FileStream(configFile.FullName, FileMode.Open, FileAccess.Read, FileShare.Read);
-                using var configFileStreamReader = new StreamReader(configFileStream);
-
-                config = JsonConvert.DeserializeObject<Config>(configFileStreamReader.ReadToEnd());
-            }
-            else
-                config = new Config();
-
-            config.PropertyChanged += (sender, e) =>
-            {
-                using var configFileStream = new FileStream(configFile.FullName, FileMode.Create, FileAccess.Write, FileShare.Read);
-                using var configFileStreamWriter = new StreamWriter(configFileStream);
-                configFileStreamWriter.Write(JsonConvert.SerializeObject(sender, Formatting.Indented));
-            };
-
-            return config;
+            if (_configFile.Exists)
+                using (var configFileStream = new FileStream(_configFile.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var configFileStreamReader = new StreamReader(configFileStream))
+                    JsonConvert.PopulateObject(configFileStreamReader.ReadToEnd(), this, new JsonSerializerSettings { Converters = { new FileInfoJsonConverter(), new DirectoryInfoJsonConverter() } });
         }
 
-        private readonly IDictionary<string, object> _configs = new Dictionary<string, object>();
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [JsonConverter(typeof(FileInfoJsonConverter))]
-        public FileInfo VlcExecutablePath { get => GetValue<FileInfo>(); set => SetValue(value); }
-
-        [JsonConverter(typeof(DirectoryInfoJsonConverter))]
-        public IReadOnlyList<DirectoryInfo> MediaDirectories { get => GetValue<IReadOnlyList<DirectoryInfo>>(); set => SetValue(value); }
-
-        public bool IsConfigured
-            => !(VlcExecutablePath is null || MediaDirectories is null);
-
-        private TValue GetValue<TValue>([CallerMemberName] string propertyName = null)
-            => _configs.TryGetValue(propertyName, out var value) ? (TValue)value : default;
-
-        private void SetValue<TValue>(TValue value, [CallerMemberName] string propertyName = null)
+        public void Save()
         {
-            _configs[propertyName] = value;
-            _NotifyPropertyChanged(propertyName);
+            using (var configFileStream = new FileStream(_configFile.FullName, FileMode.Create, FileAccess.Write, FileShare.Read))
+            using (var configFileStreamWriter = new StreamWriter(configFileStream))
+                configFileStreamWriter.Write(JsonConvert.SerializeObject(this, Formatting.Indented, new FileInfoJsonConverter(), new DirectoryInfoJsonConverter()));
         }
-
-        private void _NotifyPropertyChanged([CallerMemberName] string propertyName = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

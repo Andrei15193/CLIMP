@@ -7,9 +7,10 @@ namespace Climp.Commands
 {
     public class ConfigCommand : Command
     {
-        public ConfigCommand()
-        {
-        }
+        private readonly Config _config;
+
+        public ConfigCommand(Config config)
+            => _config = config;
 
         public override IReadOnlyList<string> Names { get; } = new[] { "config" };
 
@@ -21,9 +22,9 @@ namespace Climp.Commands
         {
             if (arguments.Count == 0)
             {
-                state.Output.WriteLine($"VLC path: {state.Config.VlcExecutablePath?.FullName}");
-                state.Output.WriteLine($"Media directories ({state.Config.MediaDirectories?.Count ?? 0}):");
-                foreach (var mediaDirectory in state.Config.MediaDirectories ?? Enumerable.Empty<DirectoryInfo>())
+                state.Output.WriteLine($"VLC path: {_config.VlcExecutablePath?.FullName}");
+                state.Output.WriteLine($"Media directories ({_config.MediaDirectories?.Count ?? 0}):");
+                foreach (var mediaDirectory in _config.MediaDirectories ?? Enumerable.Empty<DirectoryInfo>())
                     state.Output.WriteLine($"* {mediaDirectory.FullName}");
             }
             else
@@ -32,9 +33,9 @@ namespace Climp.Commands
                 List<DirectoryInfo> mediaDirectories = null;
                 Action<string> argumentProcessor = null;
                 foreach (var argument in arguments)
-                    if ("-vlcPath".Equals(argument, StringComparison.OrdinalIgnoreCase))
+                    if ("--vlc-path".Equals(argument, StringComparison.OrdinalIgnoreCase))
                         argumentProcessor = arg => { vlcPath = new FileInfo(arg); argumentProcessor = null; };
-                    else if ("-mediaDirectories".Equals(argument, StringComparison.OrdinalIgnoreCase))
+                    else if ("--media-directories".Equals(argument, StringComparison.OrdinalIgnoreCase))
                     {
                         if (mediaDirectories is null)
                             mediaDirectories = new List<DirectoryInfo>();
@@ -44,9 +45,10 @@ namespace Climp.Commands
                         argumentProcessor(argument);
 
                 if (vlcPath != null)
-                    state.Config.VlcExecutablePath = vlcPath;
+                    _config.VlcExecutablePath = vlcPath;
                 if (mediaDirectories != null)
-                    state.Config.MediaDirectories = mediaDirectories;
+                    _config.MediaDirectories = mediaDirectories;
+                _config.Save();
             }
         }
     }

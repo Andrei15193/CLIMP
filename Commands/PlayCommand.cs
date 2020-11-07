@@ -9,6 +9,11 @@ namespace Climp.Commands
 {
     public class PlayCommand : Command
     {
+        private readonly Config _config;
+
+        public PlayCommand(Config config)
+            => _config = config;
+
         public override IReadOnlyList<string> Names { get; } = new[] { "play", "p" };
 
         public override bool RequiresConfig => true;
@@ -18,14 +23,14 @@ namespace Climp.Commands
         protected internal override void Execute(State state, IReadOnlyList<string> arguments)
         {
             var searchPredicate = new ArgumentsSearchPredicate(arguments);
-            var matchedMediaFile = _SearchMediaFiles(state.Config.MediaDirectories, searchPredicate).FirstOrDefault();
+            var matchedMediaFile = _SearchMediaFiles(_config.MediaDirectories, searchPredicate).FirstOrDefault();
             if (matchedMediaFile is null || searchPredicate.GetRank(matchedMediaFile) == 0)
                 state.Output.WriteLine("No media file was found matching the given arguments.");
             else
             {
                 if (state.VlcProcess != null && !state.VlcProcess.HasExited)
                     state.VlcProcess.Kill(true);
-                state.VlcProcess = Process.Start(state.Config.VlcExecutablePath.FullName, $"--intf dummy --vout dummy --dummy-quiet --no-repeat --play-and-exit \"{matchedMediaFile.Name}\"");
+                state.VlcProcess = Process.Start(_config.VlcExecutablePath.FullName, $"--intf dummy --vout dummy --dummy-quiet --no-repeat --play-and-exit \"{matchedMediaFile.Name}\"");
                 state.VlcProcess.Exited += delegate { state.VlcProcess = null; };
                 state.Output.WriteLine($"Playing '{matchedMediaFile.Tag.Title}' by {string.Join(", ", matchedMediaFile.Tag.AlbumArtists)}");
             }

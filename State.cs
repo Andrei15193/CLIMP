@@ -5,10 +5,8 @@ namespace Climp
 {
     public class State
     {
-        public State(Config config, TextWriter output, TextWriter error)
-            => (Config, Output, Error) = (config, output, error);
-
-        public Config Config { get; }
+        public State(TextWriter output, TextWriter error)
+            => (Output, Error) = (output, error);
 
         public TextWriter Output { get; }
 
