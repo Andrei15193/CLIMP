@@ -63,10 +63,7 @@ jobs:
           -property:RepositoryCommit=$env:GITHUB_SHA
 
     - name: Publish
-      shell: pwsh
-      run: |
-        dotnet nuget add source https://nuget.pkg.github.com/Andrei15193/index.json -n github -u Andrei15193 -p ${{ secrets.UploadPackageAuthenticationToken }} --store-password-in-clear-text
-        dotnet nuget push "./publish/Climp.${{ steps.package_info.outputs.package_version }}.nupkg" --source "github"
+      run: dotnet nuget push "./publish/Climp.${{ steps.package_info.outputs.package_version }}.nupkg" --api-key ${{ secrets.NuGetAPIKey }} --source https://api.nuget.org/v3/index.json
 
     - name: Push Tag
       uses: anothrNick/github-tag-action@1.17.2
