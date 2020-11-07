@@ -14,7 +14,7 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Andrei15193/CLIMP.git</RepositoryUrl>
-    <PackageTags>embedded resource assembly browser</PackageTags>
+    <PackageTags>command line interface media music player</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
