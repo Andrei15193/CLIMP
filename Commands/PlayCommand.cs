@@ -18,9 +18,16 @@ namespace Climp.Commands
 
         public override bool RequiresConfig => true;
 
-        protected internal override string Summary => "Plays a song matching the search criteria";
+        public override string Summary => "Plays a song matching the search criteria";
 
-        protected internal override void Execute(State state, IReadOnlyList<string> arguments)
+        public override IEnumerable<string> Details => new[]
+        {
+            Summary,
+            string.Empty,
+            "Specify multiple arguments to narrow down the search, the song that best matches the criteria is played."
+        };
+
+        public override void Execute(State state, IReadOnlyList<string> arguments)
         {
             var searchPredicate = new ArgumentsSearchPredicate(arguments);
             var matchedMediaFile = _SearchMediaFiles(_config.MediaDirectories, searchPredicate).FirstOrDefault();

@@ -12,8 +12,10 @@ namespace Climp.Commands
 
         public abstract bool RequiresConfig { get; }
 
-        protected internal abstract string Summary { get; }
+        public abstract string Summary { get; }
 
-        protected internal abstract void Execute(State state, IReadOnlyList<string> arguments);
+        public abstract IEnumerable<string> Details { get; }
+
+        public abstract void Execute(State state, IReadOnlyList<string> arguments);
     }
 }

@@ -16,9 +16,20 @@ namespace Climp.Commands
 
         public override bool RequiresConfig => false;
 
-        protected internal override string Summary => "Configures the application. Set the VLC path using -vlcPath argument followed by the path to the VLC executable, set media directories using -mediaDirectories argument followed by the media directories.";
+        public override string Summary => "Configures the application by setting the VLC path and media directories.";
 
-        protected internal override void Execute(State state, IReadOnlyList<string> arguments)
+        public override IEnumerable<string> Details => new[]
+        {
+            Summary,
+            string.Empty,
+            "--vlc-path",
+            "  Specify the VLC executable path, --vlc-path \"C:\\\\path\\\\to\\\\vlc.exe\"",
+            string.Empty,
+            "--media-directories",
+            "  Specify the media directories, --media-directories \"C:\\\\directory1\" \"C:\\\\directory2\\\\subdirectory\""
+        };
+
+        public override void Execute(State state, IReadOnlyList<string> arguments)
         {
             if (arguments.Count == 0)
             {

@@ -15,29 +15,35 @@ namespace Climp.Commands
 
         public override bool RequiresConfig => false;
 
-        protected internal override string Summary => "Displays this information.";
+        public override string Summary => "Displays this information. For information about a specific command, type 'help <command name', such as help help";
 
-        protected internal override void Execute(State state, IReadOnlyList<string> arguments)
+        public override IEnumerable<string> Details => new[]
+        {
+            Summary
+        };
+
+        public override void Execute(State state, IReadOnlyList<string> arguments)
         {
             if (arguments.Any())
             {
                 var commandName = arguments.First();
-                var command = _commands.SingleOrDefault(command => string.Equals(commandName, command.Names.Contains(commandName, StringComparer.OrdinalIgnoreCase)));
+                var command = _commands.SingleOrDefault(command => command.Names.Contains(commandName, StringComparer.OrdinalIgnoreCase));
                 if (command is null)
                     state.Output.WriteLine($"Unknown '{commandName}' command.");
                 else
                 {
-                    state.Output.WriteLine(command.Summary);
-                    state.Output.WriteLine(string.Empty);
+                    foreach (var line in command.Details)
+                        state.Output.WriteLine(line);
+                    state.Output.WriteLine();
                 }
             }
             else
                 foreach (var command in _commands)
                 {
                     state.Output.WriteLine(string.Join(", ", command.Names));
-                    state.Output.Write(string.Empty);
+                    state.Output.Write("  ");
                     state.Output.WriteLine(command.Summary);
-                    state.Output.Write(string.Empty);
+                    state.Output.WriteLine();
                 }
         }
     }

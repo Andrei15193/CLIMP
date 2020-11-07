@@ -12,9 +12,14 @@ namespace Climp.Commands
 
         public override bool RequiresConfig => false;
 
-        protected internal override string Summary => "Closes the application, type this if you no longer wish to listen to music *sad face*";
+        public override string Summary => "Closes the application, type this if you no longer wish to listen to music *sad face*";
 
-        protected internal override void Execute(State state, IReadOnlyList<string> arguments)
+        public override IEnumerable<string> Details => new[]
+        {
+            Summary
+        };
+
+        public override void Execute(State state, IReadOnlyList<string> arguments)
         {
             if (state.VlcProcess != null && !state.VlcProcess.HasExited)
                 state.VlcProcess.Kill(true);
