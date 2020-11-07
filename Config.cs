@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using Climp.JsonConverters;
-using Newtonsoft.Json;
 
 namespace Climp
 {
@@ -24,14 +22,14 @@ namespace Climp
             if (_configFile.Exists)
                 using (var configFileStream = new FileStream(_configFile.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (var configFileStreamReader = new StreamReader(configFileStream))
-                    JsonConvert.PopulateObject(configFileStreamReader.ReadToEnd(), this, new JsonSerializerSettings { Converters = { new FileInfoJsonConverter(), new DirectoryInfoJsonConverter() } });
+                    new ClimpJsonSerializer().Populate(configFileStreamReader, this);
         }
 
         public void Save()
         {
             using (var configFileStream = new FileStream(_configFile.FullName, FileMode.Create, FileAccess.Write, FileShare.Read))
             using (var configFileStreamWriter = new StreamWriter(configFileStream))
-                configFileStreamWriter.Write(JsonConvert.SerializeObject(this, Formatting.Indented, new FileInfoJsonConverter(), new DirectoryInfoJsonConverter()));
+                new ClimpJsonSerializer().Serialize(configFileStreamWriter, this);
         }
     }
 }

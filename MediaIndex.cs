@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using Climp.Commands.Search;
-using Climp.JsonConverters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -47,7 +45,7 @@ namespace Climp
                 using (var indexFileStreamWriter = new StreamWriter(indexFileStream))
                 using (var indexJsonWriter = new JsonTextWriter(indexFileStreamWriter))
                 {
-                    var jsonSerializer = _GetJsonSerializer();
+                    var jsonSerializer = new ClimpJsonSerializer();
 
                     indexJsonWriter.WriteStartObject();
                     indexJsonWriter.WritePropertyName(MetadataPropertyName);
@@ -106,21 +104,11 @@ namespace Climp
                     ;
                 if (indexJsonReader.Read() && indexJsonReader.TokenType == JsonToken.StartArray)
                 {
-                    var jsonSerializer = _GetJsonSerializer();
+                    var jsonSerializer = new ClimpJsonSerializer();
                     while (indexJsonReader.Read() && indexJsonReader.TokenType == JsonToken.StartObject)
                         yield return jsonSerializer.Deserialize<MediaFile>(indexJsonReader);
                 }
             }
         }
-
-        private static JsonSerializer _GetJsonSerializer()
-            => new JsonSerializer
-            {
-                Converters = { new FileInfoJsonConverter() },
-                Culture = CultureInfo.InvariantCulture,
-                DateFormatHandling = DateFormatHandling.IsoDateFormat,
-                DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                Formatting = Formatting.Indented
-            };
     }
 }
