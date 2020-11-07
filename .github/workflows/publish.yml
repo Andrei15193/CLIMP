@@ -3,8 +3,6 @@ name: .NET Core
 on:
   push:
     branches: [ dev ]
-  pull_request:
-    branches: [ dev ]
 
 jobs:
   build:
@@ -75,3 +73,4 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         CUSTOM_TAG : ${{ steps.package_info.outputs.package_version }}
+        RELEASE_BRANCHES: .*
