@@ -20,32 +20,18 @@ dotnet pack --configuration Release --output ./packages
 dotnet tool install climp --global --add-source ./packages
 ```
 
-In order to make climp work, you need to configure it. Currently you need to do
-this manually (yeah I know, a config command is on the to-do list so this can
-be done through the application). Create a file in your user profile directory
-(in powershell you can use `$env:userProfile` to get the full path to it,
-`echo %userProfile%` in cmd to do the same) named `.climp`. This is a JSON file
-with the following structure:
-
-```js
-{
-    "vlcExecutablePath": "C:\\Program Files (x86)\\VideoLAN\\VLC\\vlc.exe", // The path where VLC is installed, absolute path so it works from everywhere
-    "mediaDirectories": [
-        "C:\\Music" // media directories where to look for music and other media, absolute paths so they work from everywhere
-    ]
-}
-```
+In order to make climp work, you need to configure it, to do this simply run
+`climp config --vlc-path <path to VLC executable> --media-directories <media directory 1> <media directory 2>`
 
 Currently only `.m4a` files are being looked for (yeah, I know, extending the
 media files that can be played is on the to-do list, it's
 [VLC](https://www.videolan.org/) who's playing them anyway).
 
 Once you have done this, you can enjoy your music from the command line by
-starting climp and playing a song.
+starting telling climp to play a song.
 
 ```
-climp
+climp play my favourite song
 ```
-```
-> play my favourite song
-```
+
+For more information about what commands are available run `climp help`
