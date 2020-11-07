@@ -72,7 +72,6 @@ jobs:
 
     - name: Push Tag
       uses: anothrNick/github-tag-action@1.17.2
-      if: startsWith(github.ref, 'refs/heads/releases/')
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         CUSTOM_TAG : ${{ steps.package_info.outputs.package_version }}
