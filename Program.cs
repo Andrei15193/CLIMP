@@ -16,15 +16,16 @@ namespace Climp
 
             var config = new Config(new FileInfo(Path.Combine(Environment.GetEnvironmentVariable("userProfile"), ".climp-config")));
             config.Load();
+            var context = new Context(Console.Out, Console.Error);
+            var state = new State();
 
-            var commands = _GetCommands(config)
+            var mediaIndex = new MediaIndex(config, new FileInfo(Path.Combine(Environment.GetEnvironmentVariable("userProfile"), ".climp-index")));
+            mediaIndex.Refresh(context);
+
+            var commands = _GetCommands(config, mediaIndex)
                 .SelectMany(command => command.Names.Select(name => new { Name = name, Command = command }))
                 .ToDictionary(pair => pair.Name, pair => pair.Command, StringComparer.OrdinalIgnoreCase);
 
-            var state = new State(
-                Console.Out,
-                Console.Error
-            );
             do
                 try
                 {
@@ -38,7 +39,7 @@ namespace Climp
                             if (command.RequiresConfig && !config.IsConfigured())
                                 Console.Error.WriteLine($"Command '{commandName}' requires config, run config command for setup");
                             else
-                                command.Execute(state, commandLineParts.Skip(1).ToArray());
+                                command.Execute(context, state, commandLineParts.Skip(1).ToArray());
                         else
                             Console.Error.WriteLine($"Unknown '{commandName}' command.");
                     }
@@ -50,13 +51,13 @@ namespace Climp
             while (!state.ShouldExit);
         }
 
-        private static IEnumerable<Command> _GetCommands(Config config)
+        private static IEnumerable<Command> _GetCommands(Config config, MediaIndex mediaIndex)
         {
             var commands = new Command[]
             {
                 new ConfigCommand(config),
                 new ExitCommand(),
-                new PlayCommand(config),
+                new PlayCommand(config, mediaIndex),
                 new StopCommand()
             };
 

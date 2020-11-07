@@ -19,7 +19,7 @@ namespace Climp.Commands
             Summary
         };
 
-        public override void Execute(State state, IReadOnlyList<string> arguments)
+        public override void Execute(Context context, State state, IReadOnlyList<string> arguments)
         {
             if (state.VlcProcess != null && !state.VlcProcess.HasExited)
                 state.VlcProcess.Kill(true);

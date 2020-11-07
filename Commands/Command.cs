@@ -16,6 +16,6 @@ namespace Climp.Commands
 
         public abstract IEnumerable<string> Details { get; }
 
-        public abstract void Execute(State state, IReadOnlyList<string> arguments);
+        public abstract void Execute(Context context, State state, IReadOnlyList<string> arguments);
     }
 }

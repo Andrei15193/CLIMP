@@ -29,14 +29,14 @@ namespace Climp.Commands
             "  Specify the media directories, --media-directories \"C:\\\\directory1\" \"C:\\\\directory2\\\\subdirectory\""
         };
 
-        public override void Execute(State state, IReadOnlyList<string> arguments)
+        public override void Execute(Context context,State state, IReadOnlyList<string> arguments)
         {
             if (arguments.Count == 0)
             {
-                state.Output.WriteLine($"VLC path: {_config.VlcExecutablePath?.FullName}");
-                state.Output.WriteLine($"Media directories ({_config.MediaDirectories?.Count ?? 0}):");
+                context.Output.WriteLine($"VLC path: {_config.VlcExecutablePath?.FullName}");
+                context.Output.WriteLine($"Media directories ({_config.MediaDirectories?.Count ?? 0}):");
                 foreach (var mediaDirectory in _config.MediaDirectories ?? Enumerable.Empty<DirectoryInfo>())
-                    state.Output.WriteLine($"* {mediaDirectory.FullName}");
+                    context.Output.WriteLine($"* {mediaDirectory.FullName}");
             }
             else
             {

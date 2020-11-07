@@ -16,11 +16,11 @@ namespace Climp.Commands
             Summary
         };
 
-        public override void Execute(State state, IReadOnlyList<string> arguments)
+        public override void Execute(Context context,State state, IReadOnlyList<string> arguments)
         {
             var vlcProcess = state.VlcProcess;
             if (vlcProcess is null || state.VlcProcess.HasExited)
-                state.Output.WriteLine("No song is currently playing");
+                context.Output.WriteLine("No song is currently playing");
             else
                 state.VlcProcess.Kill(true);
         }
