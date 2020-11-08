@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Climp.JsonConverters
@@ -15,13 +16,7 @@ namespace Climp.JsonConverters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             var processInfo = serializer.Deserialize<ProcessInfo>(reader);
-            if (processInfo is null)
-                return null;
-            else
-            {
-                var process = Process.GetProcessById(processInfo.Id);
-                return string.Equals(processInfo.Name, process.ProcessName, StringComparison.OrdinalIgnoreCase) ? process : null;
-            }
+            return processInfo is null ? null : Process.GetProcessesByName(processInfo.Name).FirstOrDefault(process => process.Id == processInfo.Id);
         }
 
         public override bool CanConvert(Type objectType)
