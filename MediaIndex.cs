@@ -28,51 +28,54 @@ namespace Climp
 
         public void Refresh(Context context)
         {
-            var indexMetadata = _GetIndexMetadata();
-            if (indexMetadata is null || _indexVersion != indexMetadata.Version || _config.MediaDirectories.Any(mediaDirectory => mediaDirectory.LastWriteTime.ToUniversalTime() > indexMetadata.CreateDate))
+            if (_config.IsConfigured())
             {
-                context.Output.WriteLine("Index is outdated, refreshing");
-
-                var stopwatch = Stopwatch.StartNew();
-
-                indexMetadata = new MediaIndexMetadata
+                var indexMetadata = _GetIndexMetadata();
+                if (indexMetadata is null || _indexVersion != indexMetadata.Version || _config.MediaDirectories.Any(mediaDirectory => mediaDirectory.LastWriteTime.ToUniversalTime() > indexMetadata.CreateDate))
                 {
-                    Version = _indexVersion,
-                    CreateDate = DateTime.UtcNow
-                };
+                    context.Output.WriteLine("Index is outdated, refreshing");
 
-                using (var indexFileStream = new FileStream(_indexFile.FullName, FileMode.Create, FileAccess.Write, FileShare.Read))
-                using (var indexFileStreamWriter = new StreamWriter(indexFileStream))
-                using (var indexJsonWriter = new JsonTextWriter(indexFileStreamWriter))
-                {
-                    var jsonSerializer = new ClimpJsonSerializer();
+                    var stopwatch = Stopwatch.StartNew();
 
-                    indexJsonWriter.WriteStartObject();
-                    indexJsonWriter.WritePropertyName(MetadataPropertyName);
-                    jsonSerializer.Serialize(indexJsonWriter, indexMetadata);
-
-                    indexJsonWriter.WritePropertyName(IndexPropertyName);
-                    indexJsonWriter.WriteStartArray();
-
-                    foreach (var file in _config.MediaDirectories.SelectMany(mediaDirecotry => mediaDirecotry.EnumerateFiles("*.m4a", SearchOption.AllDirectories)))
+                    indexMetadata = new MediaIndexMetadata
                     {
-                        var tagFile = TagLib.File.Create(file.FullName, TagLib.ReadStyle.PictureLazy);
-                        var mediaFile = new MediaFile
+                        Version = _indexVersion,
+                        CreateDate = DateTime.UtcNow
+                    };
+
+                    using (var indexFileStream = new FileStream(_indexFile.FullName, FileMode.Create, FileAccess.Write, FileShare.Read))
+                    using (var indexFileStreamWriter = new StreamWriter(indexFileStream))
+                    using (var indexJsonWriter = new JsonTextWriter(indexFileStreamWriter))
+                    {
+                        var jsonSerializer = new ClimpJsonSerializer();
+
+                        indexJsonWriter.WriteStartObject();
+                        indexJsonWriter.WritePropertyName(MetadataPropertyName);
+                        jsonSerializer.Serialize(indexJsonWriter, indexMetadata);
+
+                        indexJsonWriter.WritePropertyName(IndexPropertyName);
+                        indexJsonWriter.WriteStartArray();
+
+                        foreach (var file in _config.MediaDirectories.SelectMany(mediaDirecotry => mediaDirecotry.EnumerateFiles("*.m4a", SearchOption.AllDirectories)))
                         {
-                            File = file,
-                            Title = tagFile.Tag.Title,
-                            Artists = tagFile.Tag.AlbumArtists
-                        };
-                        jsonSerializer.Serialize(indexJsonWriter, mediaFile);
+                            var tagFile = TagLib.File.Create(file.FullName, TagLib.ReadStyle.PictureLazy);
+                            var mediaFile = new MediaFile
+                            {
+                                File = file,
+                                Title = tagFile.Tag.Title,
+                                Artists = tagFile.Tag.AlbumArtists
+                            };
+                            jsonSerializer.Serialize(indexJsonWriter, mediaFile);
+                        }
+
+                        indexJsonWriter.WriteEndArray();
+
+                        indexJsonWriter.WriteEndObject();
                     }
+                    stopwatch.Stop();
 
-                    indexJsonWriter.WriteEndArray();
-
-                    indexJsonWriter.WriteEndObject();
+                    context.Output.WriteLine($"Index refresh completed, took {stopwatch.Elapsed}.");
                 }
-                stopwatch.Stop();
-
-                context.Output.WriteLine($"Index refresh completed, took {stopwatch.Elapsed}.");
             }
         }
 
